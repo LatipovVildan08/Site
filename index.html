@@ -156,7 +156,7 @@ body.lite .bg{filter:none}
 @keyframes ringa{from{opacity:1;scale:1}to{opacity:0;scale:45}}
 .now{position:fixed;left:20px;bottom:14px;z-index:6;background:#000;border-left:8px solid var(--hi);padding:6px 18px 8px 14px;transform:skewX(-10deg);box-shadow:5px 5px 0 rgba(255,255,255,.9);animation:nowin .7s cubic-bezier(.2,1.3,.4,1) both}
 .now>*{transform:skewX(10deg);display:block}.now .cd{font-size:.8rem}.now .ct{font-family:'Russo One';font-style:normal;font-size:1.8rem;color:var(--acc);font-variant-numeric:tabular-nums}
-.now .sc{display:inline-block;color:var(--hi)}
+.now .sc{display:inline-block;color:var(--hi)}.now .week-label{font-size:.72rem;font-weight:900;letter-spacing:.08em;color:var(--hi);text-transform:uppercase;margin-bottom:2px}
 body.p5 .now{background:#fff;color:#000;border-left-color:#000;box-shadow:5px 5px 0 var(--hi)}body.p5 .now .ct{color:#000}
 body.pre .now{visibility:hidden}
 @keyframes nowin{from{opacity:0;translate:-120% 0}}
@@ -278,6 +278,7 @@ body.ios .ghost{animation:none}
 <section class="scr" id="m-today"><div class="box">
   <div class="ttl"><span>Сегодня</span></div>
   <div class="lvb" id="tb"></div>
+  <div class="dn" id="week-status" style="margin:12px 0">Сейчас 5-я учебная неделя — нечётная</div>
   <div class="dn" id="tdn"></div><div id="td"></div>
   <div class="dn" id="tmn"></div><div id="tm"></div>
   <button class="shr" id="shT">⇪ Поделиться</button><button class="back" data-back>◄ Назад</button></div></section>
@@ -286,6 +287,18 @@ body.ios .ghost{animation:none}
   <div class="ttl"><span>Расписание</span></div>
   <div class="row" id="wk"></div><div class="days" id="dy"></div><div id="ls"></div>
   <button class="shr" id="shS">⇪ Поделиться днём</button><button class="back" data-back>◄ Назад</button></div></section>
+
+<section class="scr" id="m-patch"><div class="box">
+  <div class="ttl"><span>Patch Note</span></div>
+  <div class="dn" style="margin:8px 0 18px">История обновлений сайта расписания 05-606</div>
+  <div class="card p"><span>01.10.2026 — Определение чётности недели</span><small>Последнее обновление: добавлено автоматическое определение номера учебной недели и её чётности. Неделя начинается в понедельник: 5-я учебная неделя — нечётная, 6-я — чётная. Номер и тип недели меняются автоматически.</small></div>
+  <div class="card p"><span>01.10.2026 — Индикатор недели</span><small>Слева внизу рядом с датой и временем добавлен номер текущей учебной недели. На странице «Сегодня» также отображается номер недели и указание «чётная» или «нечётная».</small></div>
+  <div class="card p"><span>01.10.2026 — Обновлено меню</span><small>Добавлен раздел Patch Note для истории изменений. В основном меню доступны «Сегодня», «Расписание», «Patch Note» и «Скачать».</small></div>
+  <div class="card p"><span>01.10.2026 — Фильтр расписания</span><small>Добавлено переключение между всеми неделями, чётными и нечётными неделями. Пары, которые проходят только в определённые недели, отмечены соответствующим образом.</small></div>
+  <div class="card p"><span>01.10.2026 — Страница «Сегодня»</span><small>Добавлены блок ближайших занятий, расписание на сегодня и просмотр расписания на следующий день.</small></div>
+  <div class="card p"><span>01.10.2026 — Установка на телефон</span><small>Добавлены инструкции по добавлению сайта на главный экран iPhone через Safari и Android через Chrome.</small></div>
+  <div class="card p"><span>01.10.2026 — Упрощение интерфейса</span><small>Убраны лишние вкладки и ненужные подписи, чтобы оставить основные функции расписания.</small></div>
+  <button class="back" data-back>◄ Назад</button></div></section>
 
 <section class="scr" id="m-dl"><div class="box">
   <div class="ttl"><span>Скачать</span></div>
@@ -296,10 +309,7 @@ body.ios .ghost{animation:none}
 
 
 
-
-
-<div class="now"><span class="cd" id="cd"></span><span class="ct" id="ct"></span></div>
-
+<div class="now"><span class="week-label" id="clock-week">5 НЕДЕЛЯ</span><span class="cd" id="cd"></span><span class="ct" id="ct"></span></div>
 
 <div id="nm"><div class="nb"><b id="nt0"></b><textarea id="nta" maxlength="200" placeholder="Заметка: дз, что принести…"></textarea><div class="nr"><button id="nsv">Сохранить</button><button id="ndl">Удалить</button><button id="ncl">✕</button></div></div></div>
 <div id="toast"></div>
@@ -307,7 +317,7 @@ body.ios .ghost{animation:none}
 
 <div id="wipe"></div>
 <script>
-// a — всегда, c — числитель, z — знаменатель
+// a — всегда, c — чётная неделя, z — нечётная неделя
 var S=[["Понедельник",[["8:30","10:00","Физическая культура","Спорткомплекс","a"],["10:10","11:40","Компьютерный практикум","С.В. Маклецов, 610","a"],["12:10","13:40","ОРГ","В.В. Сидоров, 108","c"],["12:10","13:40","Алгебра","М.В. Зубков, 218","z"]]],
 ["Вторник",[["8:30","10:00","Алгебра","М.В. Зубков, 610","a"],["10:10","11:40","Аналитическая геометрия","В.В. Шурыгин (мл), 610","a"],["12:10","13:40","Алгебра","Н.Н. Корнеева, 712","a"],["13:50","15:20","Математический анализ","Г.Ш. Скворцова, 709","c"]]],
 ["Среда",[["8:30","10:00","Математический анализ","Е.А. Турилова, 610","a"],["10:10","11:40","Аналитическая геометрия","Д.Р. Хакимов, 709","a"],["12:10","13:40","Иностранный язык","Г.Р. Еремеева, 313","a"],["13:50","15:20","Математический анализ","Г.Ш. Скворцова, 708","z"],["13:50","15:20","Алгебра","Н.Н. Корнеева, 607","c"]]],
@@ -315,11 +325,12 @@ var S=[["Понедельник",[["8:30","10:00","Физическая куль
 ["Пятница",[["8:30","10:00","Математический анализ","Е.А. Турилова, 610","a"],["10:10","11:40","История России","Ю.В. Маслова, 109","a"],["12:10","13:40","История России","Т.В. Афанасьева, 710","a"]]],
 ["Суббота",[["12:00","13:00","Тренинг саморазвития и проектирование проф. карьеры","Р.Р. Замалиев, 712","c"],["12:00","13:00","Проектный практикум","Р.Р. Замалиев, 712","z"]]]];
 var W=[["all","Все недели"],["c","Чётная"],["z","Нечётная"]],KIND={a:"Всегда",c:"Чётная",z:"Нечётная"};
-var MENU=[["Сегодня","m-today","Ближайшие пары"],["Расписание","m-sched","Пары на неделю"],["Скачать","m-dl","Как установить"]];
+var MENU=[["Сегодня","m-today","Ближайшие пары"],["Расписание","m-sched","Пары на неделю"],["Patch Note","m-patch","История обновлений"],["Скачать","m-dl","Как установить"]];
 var $=function(s){return document.querySelector(s)};
 var cur="m-menu",sel=0,START=new Date(2026,8,28),wk=cw(),di=(function(){var g=new Date().getDay();return g==0||g==6?0:g-1})();
-/* АВТО-НЕДЕЛЯ: START — понедельник первой (числитель) недели семестра. Сдвинь дату, если недели не совпадают */
-function cw(){var n=new Date(),g=n.getDay();if(g==0||g==6)n=new Date(n.getTime()+(g==0?1:2)*864e5);var w=Math.floor((n-START)/6048e5);return ((w%2)+2)%2==0?"c":"z"}
+/* АВТО-НЕДЕЛЯ: START — понедельник первой чётной недели семестра. Сдвинь дату, если недели не совпадают */
+function учебнаяНеделя(d){var n=new Date(d.getFullYear(),d.getMonth(),d.getDate()),g=(n.getDay()+6)%7;n.setDate(n.getDate()-g);return 5+Math.floor((n-START)/6048e5)}
+function cw(){return учебнаяНеделя(new Date())%2===0?"c":"z"}
 
 /* меню */
 var mm=$("#mm");
@@ -328,7 +339,7 @@ function rl(l,k){var q=Math.floor(Math.random()*BG.length);l.style.cssText="--f:
 function buildMenu(){mm.innerHTML="";MENU.forEach(function(m,i){var b=document.createElement("button");b.className="mi";b.style.setProperty("--i",i);b._rz=(Math.random()*16-8);b._sx=Math.random()*60-30;b.style.setProperty("--rz",b._rz+"deg");
  m[0].split("").forEach(function(c,k){var l=document.createElement("span");l.className="lt";l.textContent=c;rl(l,k);b.appendChild(l)});
  b.onmouseenter=function(){if(sel!=i)pick(i)};b.onclick=function(){pick(i);open(m[1])};mm.appendChild(b)});pick(sel)}
-setInterval(function(){if(lite||!document.body.classList.contains("p5")||cur!="m-menu")return;var L=mm.querySelectorAll(".lt");if(L.length)rl(L[Math.floor(Math.random()*L.length)],Math.floor(Math.random()*6))},110);
+setInterval(function(){if(lite||!document.body.classList.contains("p5")||cur!="m-menu")return;var L=mm.querySelectorAll(".lt");if(L.length)rl(L[Math.floor(Math.random()*L.length)],Math.floor(Math.random()*6))},500);
 function pick(i){if(i!=sel)sfx("tick");sel=i;[].forEach.call(mm.children,function(b,j){var d=j-i;b.classList.toggle("sel",!d);b.style.setProperty("--s",!d?1.3:Math.max(.72,1-Math.abs(d)*.12));b.style.setProperty("--x",(d*d*-6+d*10+(b._sx||0))+"px")});
  if(!lite){var b=mm.children[i];if(b){b.animate([{translate:"-60px 0",rotate:"-6deg",filter:"brightness(2.2)"},{}],{duration:280,easing:"cubic-bezier(.2,1.8,.4,1)"});burst(b)}document.body.animate([{translate:"-5px 3px"},{translate:"4px -3px"},{translate:"0 0"}],{duration:200})}}
 function burst(b){var r=b.getBoundingClientRect(),p5=document.body.classList.contains("p5");for(var i=0;i<14;i++)(function(){var e=document.createElement("i"),a=Math.random()*6.28,d=60+Math.random()*140;e.className="pt";e.style.left=r.left+r.width/2+"px";e.style.top=r.top+r.height/2+"px";e.style.width=6+Math.random()*10+"px";e.style.height=14+Math.random()*24+"px";e.style.background=p5?(Math.random()<.5?"#fff":"#000"):(Math.random()<.5?"#fff":"#22d3ff");e.style.clipPath="polygon(0 0,100% 40%,30% 100%)";document.body.appendChild(e);
@@ -338,7 +349,7 @@ function cmd(){var t="МЕНЮ",h="";var fs=["Russo One","Rubik","Oswald","Monts
  $("#cmd").innerHTML=h}
 function open(id){sfx("ok");wipe(function(){swap(id)})}
 function swap(id){cur=id;document.querySelectorAll(".scr").forEach(function(s){s.classList.toggle("on",s.id==id)});
- $("#ghost").textContent=id=="m-dl"?"Скачать":id=="m-today"?"Сегодня":id=="m-menu"?"Меню":id=="m-sched"?"Пары":"Скачать";if(id=="m-sched")draw();if(id=="m-today")updToday(true);if(id=="m-menu")slam()}
+ $("#ghost").textContent=id=="m-dl"?"Скачать":id=="m-today"?"Сегодня":id=="m-menu"?"Меню":id=="m-sched"?"Пары":id=="m-patch"?"Patch Note":"Расписание";if(id=="m-sched")draw();if(id=="m-today")updToday(true);if(id=="m-menu")slam()}
 document.querySelectorAll("[data-back]").forEach(function(b){b.onclick=function(){open("m-menu")}});
 
 /* расписание */
@@ -366,8 +377,8 @@ document.addEventListener("keydown",function(e){var k=e.key;if(e.target.tagName=
 var cv=$("#bub"),cx=cv.getContext("2d"),B=[];
 function rs(){cv.width=innerWidth;cv.height=innerHeight}rs();onresize=rs;
 for(var i=0;i<40;i++)B.push({x:Math.random(),y:Math.random(),r:2+Math.random()*7,v:.0004+Math.random()*.001,p:Math.random()*6});
-(function f(t){cx.clearRect(0,0,cv.width,cv.height);if(!lite&&!document.body.classList.contains("p5")&&!document.body.classList.contains("p4"))B.forEach(function(b){b.y-=b.v;if(b.y<-.05)b.y=1.05;
- cx.beginPath();cx.arc((b.x+Math.sin(t/1500+b.p)*.01)*cv.width,b.y*cv.height,b.r,0,6.28);cx.strokeStyle="rgba(255,255,255,.45)";cx.lineWidth=1.5;cx.stroke()});requestAnimationFrame(f)})(0);
+(function f(t){if(document.hidden||lite||document.body.classList.contains("p5")||document.body.classList.contains("p4")){cx.clearRect(0,0,cv.width,cv.height);setTimeout(function(){requestAnimationFrame(f)},500);return}cx.clearRect(0,0,cv.width,cv.height);B.forEach(function(b){b.y-=b.v;if(b.y<-.05)b.y=1.05;
+ cx.beginPath();cx.arc((b.x+Math.sin(t/1500+b.p)*.01)*cv.width,b.y*cv.height,b.r,0,6.28);cx.strokeStyle="rgba(255,255,255,.45)";cx.lineWidth=1.5;cx.stroke()});setTimeout(function(){requestAnimationFrame(f)},50)})(0);
 
 /* LOFI: генерируется в браузере (WebAudio), без файлов */
 var AC,master,on=false,timer,step=0,nextT=0,BPM=74;
@@ -473,7 +484,7 @@ function theme() {
 function setTheme(t){var b=document.body;b.classList.toggle("p5",t==="p5");b.classList.toggle("p4",t==="p4");buildMenu();try{localStorage.th=t==="p5"?"5":t==="p4"?"4":"3"}catch(x){}}
 function ticks(){sfx("clock")}
 var MO=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"],WD=["воскресенье","понедельник","вторник","среда","четверг","пятница","суббота"];
-function tickNow(){var d=new Date(),p=function(n){return n<10?"0"+n:n};$("#cd").textContent=d.getDate()+" "+MO[d.getMonth()]+", "+WD[d.getDay()];
+function tickNow(){var d=new Date(),p=function(n){return n<10?"0"+n:n};$("#clock-week").textContent=учебнаяНеделя(d)+" НЕДЕЛЯ";$("#cd").textContent=d.getDate()+" "+MO[d.getMonth()]+", "+WD[d.getDay()];
  var ct=$("#ct");ct.innerHTML=p(d.getHours())+":"+p(d.getMinutes())+'<span class="sc">:'+p(d.getSeconds())+'</span>';if(!lite&&ct.animate)ct.querySelector(".sc").animate([{scale:1.5,color:"#fff"},{scale:1}],{duration:320,easing:"ease-out"})}
 setInterval(tickNow,1000);
 function dayFx(dir) {sfx("swipe");
@@ -549,17 +560,17 @@ document.body.classList.toggle("lite",lite);$("#fxb").classList.toggle("off",lit
  p.animate([{opacity:.9,scale:1,rotate:"0deg"},{opacity:0,scale:0,rotate:"120deg",translate:(Math.random()*30-15)+"px 25px"}],450);setTimeout(function(){p.remove()},450)});
  setInterval(function(){if(lite||document.hidden||document.body.classList.contains("pre"))return;var p5=document.body.classList.contains("p5"),e=document.createElement("i"),sz=8+Math.random()*26;
   e.style.cssText="position:fixed;z-index:0;pointer-events:none;left:"+Math.random()*100+"vw;top:-40px;width:"+sz+"px;height:"+sz*(p5?1:2.4)+"px;background:"+(p5?(Math.random()<.5?"#fff":"#000"):"rgba(255,255,255,.7)")+";clip-path:"+(p5?"polygon(50% 0,100% 50%,50% 100%,0 50%)":"polygon(50% 0,100% 100%,0 100%)");
-  document.body.appendChild(e);e.animate([{translate:"0 0",rotate:"0deg",opacity:.9},{translate:(Math.random()*160-80)+"px 110vh",rotate:(Math.random()*720-360)+"deg",opacity:.2}],{duration:4000+Math.random()*3000,easing:"linear"}).onfinish=function(){e.remove()}},650)})();
+  document.body.appendChild(e);e.animate([{translate:"0 0",rotate:"0deg",opacity:.9},{translate:(Math.random()*160-80)+"px 110vh",rotate:(Math.random()*720-360)+"deg",opacity:.2}],{duration:4000+Math.random()*3000,easing:"linear"}).onfinish=function(){e.remove()}},1500)})();
 /* скоростные линии */
 setInterval(function(){if(lite||document.hidden||document.body.classList.contains("pre"))return;var p5=document.body.classList.contains("p5"),e=document.createElement("i"),L=120+Math.random()*300,dir=Math.random()<.5?1:-1;
  e.style.cssText="position:fixed;z-index:1;pointer-events:none;top:"+Math.random()*100+"vh;left:0;height:"+(1+Math.random()*3)+"px;width:"+L+"px;background:linear-gradient(90deg,transparent,"+(p5?(Math.random()<.5?"#fff":"#000"):"rgba(255,255,255,.8)")+",transparent);rotate:-12deg";
- document.body.appendChild(e);e.animate([{translate:(dir>0?-L:innerWidth)+"px 0"},{translate:(dir>0?innerWidth:-L)+"px 0"}],{duration:350+Math.random()*350,easing:"linear"}).onfinish=function(){e.remove()}},180);
+ document.body.appendChild(e);e.animate([{translate:(dir>0?-L:innerWidth)+"px 0"},{translate:(dir>0?innerWidth:-L)+"px 0"}],{duration:350+Math.random()*350,easing:"linear"}).onfinish=function(){e.remove()}},700);
 
 /* ===== обновление 2 ===== */
 var NOTES={};try{NOTES=JSON.parse(localStorage.notes||"{}")}catch(e){}
 function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function mn(t){var a=t.split(":");return +a[0]*60+ +a[1]}
-function par(d){var w=(d.getDay()+6)%7,m=new Date(d.getFullYear(),d.getMonth(),d.getDate()-w);return ((Math.round((m-START)/6048e5)%2)+2)%2==0?"c":"z"}
+function par(d){return учебнаяНеделя(d)%2===0?"c":"z"}
 function tIdx(d){var g=d.getDay();return g==0||g==6?-1:g-1}
 function isLive(i,l){var n=new Date();if(tIdx(n)!=i)return false;if(l[4]!="a"&&l[4]!=par(n))return false;var m=n.getHours()*60+n.getMinutes();return m>=mn(l[0])&&m<mn(l[1])}
 function rows(i,f,live){var L=S[i][1].filter(function(l){return f=="all"||l[4]=="a"||l[4]==f}),h="";
@@ -570,11 +581,11 @@ function status(){var n=new Date(),i=tIdx(n),p=par(n),k,l,d;if(i<0)return["Вы�
  for(k=0;k<L.length;k++){l=L[k];if(m>=mn(l[0])&&m<mn(l[1]))return["СЕЙЧАС: "+l[2],"до конца "+(mn(l[1])-m)+" мин"+(l[3]?" · "+l[3]:"")]}
  for(k=0;k<L.length;k++){l=L[k];if(mn(l[0])>m){d=mn(l[0])-m;return["ДАЛЬШЕ: "+l[2],"через "+(d>=60?Math.floor(d/60)+" ч ":"")+d%60+" мин"+(l[3]?" · "+l[3]:"")]}}
  return["Пары закончились","Хорошего вечера"]}
-var lastT="",PL={c:"числитель",z:"знаменатель"};
-function updToday(force){var n=new Date(),st=status();$("#tb").innerHTML="<b>"+esc(st[0])+"</b><small>"+esc(st[1])+"</small>";
+var lastT="",PL={c:"чётная",z:"нечётная"};
+function updToday(force){var n=new Date(),st=status(),wn=учебнаяНеделя(n),parity=wn%2===0?"чётная":"нечётная";$("#week-status").textContent="Сейчас "+wn+"-я учебная неделя — "+parity;$("#tb").innerHTML="<b>"+esc(st[0])+"</b><small>"+esc(st[1])+"</small>";
  if(force||st[0]!=lastT){lastT=st[0];var i=tIdx(n),p=par(n),t=new Date(n.getTime()+864e5),j=tIdx(t),E='<div class="card p"><span>Выходной 🎉</span></div>';
-  $("#tdn").textContent=i<0?"Сегодня — выходной":"Сегодня — "+S[i][0];$("#td").innerHTML=i<0?E:rows(i,p,true);
-  $("#tmn").textContent=j<0?"Завтра — выходной":"Завтра — "+S[j][0];$("#tm").innerHTML=j<0?E:rows(j,par(t),false)}}
+  $("#tdn").textContent=i<0?"Сегодня — выходной":"Сегодня — "+S[i][0]+" · "+PL[p];$("#td").innerHTML=i<0?E:rows(i,p,true);
+  $("#tmn").textContent=j<0?"Завтра — выходной":"Завтра — "+S[j][0]+" · "+PL[par(t)];$("#tm").innerHTML=j<0?E:rows(j,par(t),false)}}
 /* заметки */
 var nk=null;
 function nopen(k){nk=k;$("#nt0").textContent=k.split("|")[2];$("#nta").value=NOTES[k]||"";$("#nm").classList.add("on");setTimeout(function(){$("#nta").focus()},60)}
