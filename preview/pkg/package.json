@@ -1,0 +1,16 @@
+{
+  "name": "schedule_core",
+  "type": "module",
+  "description": "Lightweight Rust/WASM core for the university schedule",
+  "version": "0.1.0",
+  "files": [
+    "schedule_core_bg.wasm",
+    "schedule_core.js",
+    "schedule_core.d.ts"
+  ],
+  "main": "schedule_core.js",
+  "types": "schedule_core.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
