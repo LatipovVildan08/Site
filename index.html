@@ -427,7 +427,7 @@ addEventListener("pointerdown",function(e){sx=e.clientX;sy=e.clientY;if(lite)ret
 addEventListener("pointerup",function(e){if(document.body.classList.contains("pre"))return;var dx=e.clientX-sx,dy=e.clientY-sy,h=Math.abs(dx)>Math.abs(dy)*1.4;
  if(cur=="m-menu"&&Math.abs(dy)>50&&!h)pick((sel+(dy<0?MENU.length-1:1))%MENU.length);
  else if(cur!="m-menu"&&cur!="m-sched"&&dx>70&&h)open("m-menu")});
-addEventListener("pointermove",function(e){var x=(e.clientX/innerWidth-.5)*-30,y=(e.clientY/innerHeight-.5)*-20;$("#cmd").style.marginRight=x+"px";$("#cmd").style.marginTop=y+"px"});
+addEventListener("pointermove",function(e){if(lite)return;var x=(e.clientX/innerWidth-.5)*-30,y=(e.clientY/innerHeight-.5)*-20;$("#cmd").style.marginRight=x+"px";$("#cmd").style.marginTop=y+"px"});
 /* смена темы: часы Тёмного часа + шторки */
 var busy=false;
 function theme() {
@@ -485,8 +485,8 @@ function setTheme(t){var b=document.body;b.classList.toggle("p5",t==="p5");b.cla
 function ticks(){sfx("clock")}
 var MO=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"],WD=["воскресенье","понедельник","вторник","среда","четверг","пятница","суббота"];
 function tickNow(){var d=new Date(),p=function(n){return n<10?"0"+n:n};$("#clock-week").textContent=учебнаяНеделя(d)+" НЕДЕЛЯ";$("#cd").textContent=d.getDate()+" "+MO[d.getMonth()]+", "+WD[d.getDay()];
- var ct=$("#ct");ct.innerHTML=p(d.getHours())+":"+p(d.getMinutes())+'<span class="sc">:'+p(d.getSeconds())+'</span>';if(!lite&&ct.animate)ct.querySelector(".sc").animate([{scale:1.5,color:"#fff"},{scale:1}],{duration:320,easing:"ease-out"})}
-setInterval(tickNow,1000);
+ var ct=$("#ct");ct.textContent=p(d.getHours())+":"+p(d.getMinutes())}
+setInterval(tickNow,60000);
 function dayFx(dir) {sfx("swipe");
   if(lite)return;
   var bd = document.body, p5 = bd.classList.contains("p5"), b = document.querySelector("#dy .on");
@@ -527,7 +527,7 @@ function dayFx(dir) {sfx("swipe");
 
 $("#thm").onclick=theme;
 
-var lite=false;try{lite=localStorage.lite=="1"||matchMedia("(prefers-reduced-motion:reduce)").matches}catch(e){}
+var lite=true;try{lite=localStorage.lite!=="0"||matchMedia("(prefers-reduced-motion:reduce)").matches}catch(e){}
 function setLite(){lite=!lite;document.body.classList.toggle("lite",lite);$("#fxb").classList.toggle("off",lite);try{localStorage.lite=lite?"1":"0"}catch(e){}}
 document.body.classList.toggle("lite",lite);$("#fxb").classList.toggle("off",lite);$("#fxb").onclick=setLite;
 
