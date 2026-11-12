@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg"><meta name="theme-color" content="#0b3cff"><meta name="apple-mobile-web-app-capable" content="yes"><title>Математика и компьютерные науки 05-606</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,700;1,900&family=Russo+One&family=Rubik:ital,wght@0,900&family=Oswald:wght@700&family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,700;1,900&family=Russo+One&family=Oswald:wght@700&display=swap" rel="stylesheet">
 <style>
 :root{--bg1:#0a12b0;--bg2:#0b3cff;--bg3:#18c4ff;--acc:#22d3ff;--hi:#e8141c;--ink:#fff}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -266,6 +266,11 @@ body.lite .bg{filter:none!important;animation:none!important}
 body.lite #fx{backdrop-filter:none!important}
 body.lite *{box-shadow:none!important;text-shadow:none!important;filter:none!important}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+/* Further reduce memory and paint work in low-power mode */
+body.lite #art{display:none!important}
+body.lite #bub,.swh{display:none!important}
+body.lite .bg{background:linear-gradient(135deg,#07114d,#0754d8 58%,#08a9dc)!important}
+body.lite #fx{backdrop-filter:none!important;filter:none!important}
 </style>
 </head>
 <body class="intro">
@@ -335,6 +340,8 @@ var S=[["Понедельник",[["8:30","10:00","Физическая куль
 var W=[["all","Все недели"],["c","Чётная"],["z","Нечётная"]],KIND={a:"Всегда",c:"Чётная",z:"Нечётная"};
 var MENU=[["Сегодня","m-today","Ближайшие пары"],["Расписание","m-sched","Пары на неделю"],["Patch Note","m-patch","История обновлений"],["Скачать","m-dl","Как установить"]];
 var $=function(s){return document.querySelector(s)};
+/* Low-power mode is set before UI creation and decorative handlers. */
+var lite=true;
 var cur="m-menu",sel=0,START=new Date(2026,8,28),wk=cw(),di=(function(){var g=new Date().getDay();return g==0||g==6?0:g-1})();
 /* АВТО-НЕДЕЛЯ: START — понедельник первой чётной недели семестра. Сдвинь дату, если недели не совпадают */
 function учебнаяНеделя(d){if(window.ScheduleCore)return window.ScheduleCore.academic_week(d.getFullYear(),d.getMonth()+1,d.getDate());var n=new Date(d.getFullYear(),d.getMonth(),d.getDate()),g=(n.getDay()+6)%7;n.setDate(n.getDate()-g);return 5+Math.floor((n-START)/6048e5)}
@@ -381,13 +388,20 @@ document.addEventListener("keydown",function(e){var k=e.key;if(e.target.tagName=
 
 
 
-/* пузыри (P3R) */
-var cv=$("#bub"),cx=cv.getContext("2d"),B=[];
-function rs(){cv.width=innerWidth;cv.height=innerHeight}rs();onresize=rs;
-for(var i=0;i<(innerWidth<700?16:24);i++)B.push({x:Math.random(),y:Math.random(),r:2+Math.random()*7,v:.0004+Math.random()*.001,p:Math.random()*6});
-(function f(t){if(document.hidden||lite||document.body.classList.contains("p5")||document.body.classList.contains("p4")){cx.clearRect(0,0,cv.width,cv.height);setTimeout(function(){requestAnimationFrame(f)},500);return}cx.clearRect(0,0,cv.width,cv.height);B.forEach(function(b){b.y-=b.v;if(b.y<-.05)b.y=1.05;
- cx.beginPath();cx.arc((b.x+Math.sin(t/1500+b.p)*.01)*cv.width,b.y*cv.height,b.r,0,6.28);cx.strokeStyle="rgba(255,255,255,.45)";cx.lineWidth=1.5;cx.stroke()});setTimeout(function(){requestAnimationFrame(f)},66)})(0);
-
+/* Canvas animation is opt-in only. In low-power mode, don't create a context or timer. */
+if(!lite){
+  
+  var cv=$("#bub"),cx=cv.getContext("2d"),B=[];
+  function rs(){cv.width=innerWidth;cv.height=innerHeight}rs();onresize=rs;
+  for(var i=0;i<(innerWidth<700?16:24);i++)B.push({x:Math.random(),y:Math.random(),r:2+Math.random()*7,v:.0004+Math.random()*.001,p:Math.random()*6});
+  (function f(t){if(document.hidden||lite||document.body.classList.contains("p5")||document.body.classList.contains("p4")){cx.clearRect(0,0,cv.width,cv.height);setTimeout(function(){requestAnimationFrame(f)},500);return}cx.clearRect(0,0,cv.width,cv.height);B.forEach(function(b){b.y-=b.v;if(b.y<-.05)b.y=1.05;
+   cx.beginPath();cx.arc((b.x+Math.sin(t/1500+b.p)*.01)*cv.width,b.y*cv.height,b.r,0,6.28);cx.strokeStyle="rgba(255,255,255,.45)";cx.lineWidth=1.5;cx.stroke()});setTimeout(function(){requestAnimationFrame(f)},66)})(0);
+  
+  
+}else{
+  var unusedCanvas=$("#bub");
+  if(unusedCanvas)unusedCanvas.remove();
+}
 /* LOFI: генерируется в браузере (WebAudio), без файлов */
 var AC,master,on=false,timer,step=0,nextT=0,BPM=74;
 var CH=[[53,57,60,64],[52,55,59,62],[50,53,57,60],[48,52,55,59]]; // Fmaj7 Em7 Dm7 Cmaj7
@@ -535,7 +549,7 @@ function dayFx(dir) {sfx("swipe");
 
 $("#thm").onclick=theme;
 
-var lite=true;
+
 function setLite(){lite=!lite;document.body.classList.toggle("lite",lite);$("#fxb").classList.toggle("off",lite);try{localStorage.lite=lite?"1":"0"}catch(e){}}
 document.body.classList.toggle("lite",lite);$("#fxb").classList.toggle("off",lite);$("#fxb").onclick=setLite;
 
