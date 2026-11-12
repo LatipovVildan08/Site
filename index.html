@@ -329,7 +329,7 @@ var MENU=[["Сегодня","m-today","Ближайшие пары"],["Расп�
 var $=function(s){return document.querySelector(s)};
 var cur="m-menu",sel=0,START=new Date(2026,8,28),wk=cw(),di=(function(){var g=new Date().getDay();return g==0||g==6?0:g-1})();
 /* АВТО-НЕДЕЛЯ: START — понедельник первой чётной недели семестра. Сдвинь дату, если недели не совпадают */
-function учебнаяНеделя(d){var n=new Date(d.getFullYear(),d.getMonth(),d.getDate()),g=(n.getDay()+6)%7;n.setDate(n.getDate()-g);return 5+Math.floor((n-START)/6048e5)}
+function учебнаяНеделя(d){if(window.ScheduleCore)return window.ScheduleCore.academic_week(d.getFullYear(),d.getMonth()+1,d.getDate());var n=new Date(d.getFullYear(),d.getMonth(),d.getDate()),g=(n.getDay()+6)%7;n.setDate(n.getDate()-g);return 5+Math.floor((n-START)/6048e5)}
 function cw(){return учебнаяНеделя(new Date())%2===0?"c":"z"}
 
 /* меню */
@@ -376,9 +376,9 @@ document.addEventListener("keydown",function(e){var k=e.key;if(e.target.tagName=
 /* пузыри (P3R) */
 var cv=$("#bub"),cx=cv.getContext("2d"),B=[];
 function rs(){cv.width=innerWidth;cv.height=innerHeight}rs();onresize=rs;
-for(var i=0;i<40;i++)B.push({x:Math.random(),y:Math.random(),r:2+Math.random()*7,v:.0004+Math.random()*.001,p:Math.random()*6});
+for(var i=0;i<(innerWidth<700?16:24);i++)B.push({x:Math.random(),y:Math.random(),r:2+Math.random()*7,v:.0004+Math.random()*.001,p:Math.random()*6});
 (function f(t){if(document.hidden||lite||document.body.classList.contains("p5")||document.body.classList.contains("p4")){cx.clearRect(0,0,cv.width,cv.height);setTimeout(function(){requestAnimationFrame(f)},500);return}cx.clearRect(0,0,cv.width,cv.height);B.forEach(function(b){b.y-=b.v;if(b.y<-.05)b.y=1.05;
- cx.beginPath();cx.arc((b.x+Math.sin(t/1500+b.p)*.01)*cv.width,b.y*cv.height,b.r,0,6.28);cx.strokeStyle="rgba(255,255,255,.45)";cx.lineWidth=1.5;cx.stroke()});setTimeout(function(){requestAnimationFrame(f)},50)})(0);
+ cx.beginPath();cx.arc((b.x+Math.sin(t/1500+b.p)*.01)*cv.width,b.y*cv.height,b.r,0,6.28);cx.strokeStyle="rgba(255,255,255,.45)";cx.lineWidth=1.5;cx.stroke()});setTimeout(function(){requestAnimationFrame(f)},66)})(0);
 
 /* LOFI: генерируется в браузере (WebAudio), без файлов */
 var AC,master,on=false,timer,step=0,nextT=0,BPM=74;
@@ -560,19 +560,19 @@ document.body.classList.toggle("lite",lite);$("#fxb").classList.toggle("off",lit
  p.animate([{opacity:.9,scale:1,rotate:"0deg"},{opacity:0,scale:0,rotate:"120deg",translate:(Math.random()*30-15)+"px 25px"}],450);setTimeout(function(){p.remove()},450)});
  setInterval(function(){if(lite||document.hidden||document.body.classList.contains("pre"))return;var p5=document.body.classList.contains("p5"),e=document.createElement("i"),sz=8+Math.random()*26;
   e.style.cssText="position:fixed;z-index:0;pointer-events:none;left:"+Math.random()*100+"vw;top:-40px;width:"+sz+"px;height:"+sz*(p5?1:2.4)+"px;background:"+(p5?(Math.random()<.5?"#fff":"#000"):"rgba(255,255,255,.7)")+";clip-path:"+(p5?"polygon(50% 0,100% 50%,50% 100%,0 50%)":"polygon(50% 0,100% 100%,0 100%)");
-  document.body.appendChild(e);e.animate([{translate:"0 0",rotate:"0deg",opacity:.9},{translate:(Math.random()*160-80)+"px 110vh",rotate:(Math.random()*720-360)+"deg",opacity:.2}],{duration:4000+Math.random()*3000,easing:"linear"}).onfinish=function(){e.remove()}},1500)})();
+  document.body.appendChild(e);e.animate([{translate:"0 0",rotate:"0deg",opacity:.9},{translate:(Math.random()*160-80)+"px 110vh",rotate:(Math.random()*720-360)+"deg",opacity:.2}],{duration:4000+Math.random()*3000,easing:"linear"}).onfinish=function(){e.remove()}},2600)})();
 /* скоростные линии */
 setInterval(function(){if(lite||document.hidden||document.body.classList.contains("pre"))return;var p5=document.body.classList.contains("p5"),e=document.createElement("i"),L=120+Math.random()*300,dir=Math.random()<.5?1:-1;
  e.style.cssText="position:fixed;z-index:1;pointer-events:none;top:"+Math.random()*100+"vh;left:0;height:"+(1+Math.random()*3)+"px;width:"+L+"px;background:linear-gradient(90deg,transparent,"+(p5?(Math.random()<.5?"#fff":"#000"):"rgba(255,255,255,.8)")+",transparent);rotate:-12deg";
- document.body.appendChild(e);e.animate([{translate:(dir>0?-L:innerWidth)+"px 0"},{translate:(dir>0?innerWidth:-L)+"px 0"}],{duration:350+Math.random()*350,easing:"linear"}).onfinish=function(){e.remove()}},700);
+ document.body.appendChild(e);e.animate([{translate:(dir>0?-L:innerWidth)+"px 0"},{translate:(dir>0?innerWidth:-L)+"px 0"}],{duration:350+Math.random()*350,easing:"linear"}).onfinish=function(){e.remove()}},1500);
 
 /* ===== обновление 2 ===== */
 var NOTES={};try{NOTES=JSON.parse(localStorage.notes||"{}")}catch(e){}
 function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
-function mn(t){var a=t.split(":");return +a[0]*60+ +a[1]}
-function par(d){return учебнаяНеделя(d)%2===0?"c":"z"}
+function mn(t){return window.ScheduleCore?window.ScheduleCore.time_to_minutes(t):(function(){var a=t.split(":");return +a[0]*60+ +a[1]})()}
+function par(d){return window.ScheduleCore?window.ScheduleCore.parity_code(учебнаяНеделя(d)):(учебнаяНеделя(d)%2===0?"c":"z")}
 function tIdx(d){var g=d.getDay();return g==0||g==6?-1:g-1}
-function isLive(i,l){var n=new Date();if(tIdx(n)!=i)return false;if(l[4]!="a"&&l[4]!=par(n))return false;var m=n.getHours()*60+n.getMinutes();return m>=mn(l[0])&&m<mn(l[1])}
+function isLive(i,l){var n=new Date();if(tIdx(n)!=i)return false;if(l[4]!="a"&&l[4]!=par(n))return false;var m=n.getHours()*60+n.getMinutes();return window.ScheduleCore?window.ScheduleCore.lesson_state(l[0],l[1],m)===0:(m>=mn(l[0])&&m<mn(l[1]))}
 function rows(i,f,live){var L=S[i][1].filter(function(l){return f=="all"||l[4]=="a"||l[4]==f}),h="";
  L.forEach(function(l,n){var k=i+"|"+l[0]+"|"+l[2],lv=live&&isLive(i,l);
   h+='<div class="les k-'+l[4]+(lv?" live":"")+'" data-k="'+esc(k)+'" style="--n:'+n+'"><div class="in"><div class="time">'+l[0]+' – '+l[1]+'</div><div class="txt"><h3>'+l[2]+'</h3>'+(l[3]?'<p>'+l[3]+'</p>':'')+(NOTES[k]?'<p class="nt">📝 '+esc(NOTES[k])+'</p>':'')+'</div>'+(lv?'<span class="kind lv">СЕЙЧАС</span>':'<span class="kind">'+KIND[l[4]]+'</span>')+'</div></div>'});
@@ -626,12 +626,23 @@ function darkHour(){if(busy)return;if(lite){toast("🕛 Тёмный час");re
  fx.querySelector("#fh").animate([{rotate:"-60deg"},{rotate:"0deg"}],{duration:2000,delay:300,easing:"steps(12,end)",fill:"both"});
  setTimeout(function(){fx.classList.remove("on");fx.style.opacity=0},3400);setTimeout(function(){fx.remove();busy=false},4000)}
 (function(){var c=0,t;$(".plate").addEventListener("click",function(){c++;clearTimeout(t);t=setTimeout(function(){c=0},600);if(c>=3){c=0;darkHour()}})})();
-setInterval(function(){var d=new Date();if(!d.getHours()&&!d.getMinutes()&&!d.getSeconds())darkHour();if(cur=="m-today")updToday()},1000);
+var lastMinute=-1;setInterval(function(){var d=new Date(),minute=d.getHours()*60+d.getMinutes();if(!d.getHours()&&!d.getMinutes()&&!d.getSeconds())darkHour();if(cur=="m-today"&&minute!==lastMinute){lastMinute=minute;updToday()}},15000);
 /* установка */
 var dip;addEventListener("beforeinstallprompt",function(e){e.preventDefault();dip=e;$("#ins").style.display="";$("#dlb").style.display=""});
 $("#ins").onclick=$("#dlb").onclick=function(){if(dip){dip.prompt();dip=null;$("#ins").style.display="none";$("#dlb").style.display="none"}};
 if("serviceWorker" in navigator&&location.protocol.indexOf("http")==0)navigator.serviceWorker.register("sw.js").catch(function(){});
 buildMenu();cmd();slam();tickNow();
+</script>
+
+<script type="module">
+import init, * as scheduleCore from "./pkg/schedule_core.js";
+init().then(function () {
+  window.ScheduleCore = scheduleCore;
+  if (typeof tickNow === "function") tickNow();
+  if (typeof updToday === "function" && cur === "m-today") updToday(true);
+}).catch(function (error) {
+  console.warn("Rust/WASM не загрузился; используется резервная версия JavaScript.", error);
+});
 </script>
 </body>
 </html>
