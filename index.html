@@ -330,7 +330,7 @@ var $=function(s){return document.querySelector(s)};
 var cur="m-menu",sel=0,START=new Date(2026,8,28),wk=cw(),di=(function(){var g=new Date().getDay();return g==0||g==6?0:g-1})();
 /* АВТО-НЕДЕЛЯ: START — понедельник первой чётной недели семестра. Сдвинь дату, если недели не совпадают */
 function учебнаяНеделя(d){if(window.ScheduleCore)return window.ScheduleCore.academic_week(d.getFullYear(),d.getMonth()+1,d.getDate());var n=new Date(d.getFullYear(),d.getMonth(),d.getDate()),g=(n.getDay()+6)%7;n.setDate(n.getDate()-g);return 5+Math.floor((n-START)/6048e5)}
-function cw(){return учебнаяНеделя(new Date())%2===0?"c":"z"}
+function cw(){return par(new Date())}
 
 /* меню */
 var mm=$("#mm");
@@ -573,13 +573,13 @@ function mn(t){return window.ScheduleCore?window.ScheduleCore.time_to_minutes(t)
 function par(d){return window.ScheduleCore?window.ScheduleCore.parity_code(учебнаяНеделя(d)):(учебнаяНеделя(d)%2===0?"c":"z")}
 function tIdx(d){var g=d.getDay();return g==0||g==6?-1:g-1}
 function isLive(i,l){var n=new Date();if(tIdx(n)!=i)return false;if(l[4]!="a"&&l[4]!=par(n))return false;var m=n.getHours()*60+n.getMinutes();return window.ScheduleCore?window.ScheduleCore.lesson_state(l[0],l[1],m)===0:(m>=mn(l[0])&&m<mn(l[1]))}
-function rows(i,f,live){var L=S[i][1].filter(function(l){return f=="all"||l[4]=="a"||l[4]==f}),h="";
+function lessonMatches(l,f){if(f=="all")return true;if(window.ScheduleCore)return window.ScheduleCore.lesson_matches_week(l[4],f=="c"?6:5);return l[4]=="a"||l[4]==f}\nfunction rows(i,f,live){var L=S[i][1].filter(function(l){return lessonMatches(l,f)}),h="";
  L.forEach(function(l,n){var k=i+"|"+l[0]+"|"+l[2],lv=live&&isLive(i,l);
   h+='<div class="les k-'+l[4]+(lv?" live":"")+'" data-k="'+esc(k)+'" style="--n:'+n+'"><div class="in"><div class="time">'+l[0]+' – '+l[1]+'</div><div class="txt"><h3>'+l[2]+'</h3>'+(l[3]?'<p>'+l[3]+'</p>':'')+(NOTES[k]?'<p class="nt">📝 '+esc(NOTES[k])+'</p>':'')+'</div>'+(lv?'<span class="kind lv">СЕЙЧАС</span>':'<span class="kind">'+KIND[l[4]]+'</span>')+'</div></div>'});
  return h||'<div class="card p"><span>Пар нет</span></div>'}
 function status(){var n=new Date(),i=tIdx(n),p=par(n),k,l,d;if(i<0)return["Выходной","Пар нет — отдыхай"];var m=n.getHours()*60+n.getMinutes(),L=S[i][1].filter(function(l){return l[4]=="a"||l[4]==p});
- for(k=0;k<L.length;k++){l=L[k];if(m>=mn(l[0])&&m<mn(l[1]))return["СЕЙЧАС: "+l[2],"до конца "+(mn(l[1])-m)+" мин"+(l[3]?" · "+l[3]:"")]}
- for(k=0;k<L.length;k++){l=L[k];if(mn(l[0])>m){d=mn(l[0])-m;return["ДАЛЬШЕ: "+l[2],"через "+(d>=60?Math.floor(d/60)+" ч ":"")+d%60+" мин"+(l[3]?" · "+l[3]:"")]}}
+ for(k=0;k<L.length;k++){l=L[k];if((window.ScheduleCore?window.ScheduleCore.lesson_state(l[0],l[1],m)===0:(m>=mn(l[0])&&m<mn(l[1]))))return["СЕЙЧАС: "+l[2],"до конца "+(mn(l[1])-m)+" мин"+(l[3]?" · "+l[3]:"")]}
+ for(k=0;k<L.length;k++){l=L[k];if((window.ScheduleCore?window.ScheduleCore.lesson_state(l[0],l[1],m)===-1:mn(l[0])>m)){d=mn(l[0])-m;return["ДАЛЬШЕ: "+l[2],"через "+(d>=60?Math.floor(d/60)+" ч ":"")+d%60+" мин"+(l[3]?" · "+l[3]:"")]}}
  return["Пары закончились","Хорошего вечера"]}
 var lastT="",PL={c:"чётная",z:"нечётная"};
 function updToday(force){var n=new Date(),st=status(),wn=учебнаяНеделя(n),parity=wn%2===0?"чётная":"нечётная";$("#week-status").textContent="Сейчас "+wn+"-я учебная неделя — "+parity;$("#tb").innerHTML="<b>"+esc(st[0])+"</b><small>"+esc(st[1])+"</small>";
