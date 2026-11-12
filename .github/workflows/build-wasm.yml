@@ -14,6 +14,8 @@ on:
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -26,6 +28,18 @@ jobs:
         run: cargo test --manifest-path rust-core/Cargo.toml
       - name: Build WebAssembly package
         run: wasm-pack build rust-core --target web --release --out-dir ../pkg
+      - name: Publish generated WASM package to this branch
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pkg/
+          if git diff --cached --quiet; then
+            echo "WASM package is already up to date"
+          else
+            git commit -m "Build Rust WebAssembly package"
+            git push
+          fi
       - name: Upload WebAssembly package
         uses: actions/upload-artifact@v4
         with:
