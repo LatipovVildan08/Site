@@ -258,6 +258,14 @@ body.ios::before,body.ios .bg::before,body.ios #bub{display:none!important}
 body.ios .bg{animation:none!important;filter:none!important}
 body.ios #fx{backdrop-filter:none!important}
 body.ios .ghost{animation:none}
+
+/* HARD LOW-POWER DEFAULT: preserve layout and colors, remove continuous paint/compositing work */
+body.lite #bub{display:none!important}
+body.lite .bg::before,body.lite body::before,body.lite .mq,body.lite .les::after{display:none!important}
+body.lite .bg{filter:none!important;animation:none!important}
+body.lite #fx{backdrop-filter:none!important}
+body.lite *{box-shadow:none!important;text-shadow:none!important;filter:none!important}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body class="intro">
@@ -527,7 +535,7 @@ function dayFx(dir) {sfx("swipe");
 
 $("#thm").onclick=theme;
 
-var lite=true;try{lite=localStorage.lite!=="0"||matchMedia("(prefers-reduced-motion:reduce)").matches}catch(e){}
+var lite=true;
 function setLite(){lite=!lite;document.body.classList.toggle("lite",lite);$("#fxb").classList.toggle("off",lite);try{localStorage.lite=lite?"1":"0"}catch(e){}}
 document.body.classList.toggle("lite",lite);$("#fxb").classList.toggle("off",lite);$("#fxb").onclick=setLite;
 
