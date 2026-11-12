@@ -573,7 +573,8 @@ function mn(t){return window.ScheduleCore?window.ScheduleCore.time_to_minutes(t)
 function par(d){return window.ScheduleCore?window.ScheduleCore.parity_code(учебнаяНеделя(d)):(учебнаяНеделя(d)%2===0?"c":"z")}
 function tIdx(d){var g=d.getDay();return g==0||g==6?-1:g-1}
 function isLive(i,l){var n=new Date();if(tIdx(n)!=i)return false;if(l[4]!="a"&&l[4]!=par(n))return false;var m=n.getHours()*60+n.getMinutes();return window.ScheduleCore?window.ScheduleCore.lesson_state(l[0],l[1],m)===0:(m>=mn(l[0])&&m<mn(l[1]))}
-function lessonMatches(l,f){if(f=="all")return true;if(window.ScheduleCore)return window.ScheduleCore.lesson_matches_week(l[4],f=="c"?6:5);return l[4]=="a"||l[4]==f}\nfunction rows(i,f,live){var L=S[i][1].filter(function(l){return lessonMatches(l,f)}),h="";
+function lessonMatches(l,f){if(f=="all")return true;if(window.ScheduleCore)return window.ScheduleCore.lesson_matches_week(l[4],f=="c"?6:5);return l[4]=="a"||l[4]==f}
+function rows(i,f,live){var L=S[i][1].filter(function(l){return lessonMatches(l,f)}),h="";
  L.forEach(function(l,n){var k=i+"|"+l[0]+"|"+l[2],lv=live&&isLive(i,l);
   h+='<div class="les k-'+l[4]+(lv?" live":"")+'" data-k="'+esc(k)+'" style="--n:'+n+'"><div class="in"><div class="time">'+l[0]+' – '+l[1]+'</div><div class="txt"><h3>'+l[2]+'</h3>'+(l[3]?'<p>'+l[3]+'</p>':'')+(NOTES[k]?'<p class="nt">📝 '+esc(NOTES[k])+'</p>':'')+'</div>'+(lv?'<span class="kind lv">СЕЙЧАС</span>':'<span class="kind">'+KIND[l[4]]+'</span>')+'</div></div>'});
  return h||'<div class="card p"><span>Пар нет</span></div>'}
